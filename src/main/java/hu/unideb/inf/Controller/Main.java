@@ -10,6 +10,7 @@ import hu.unideb.inf.View.MyText;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.scene.input.MouseEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
@@ -56,10 +57,14 @@ public class Main extends Application{
         MyRectangle temprect = new MyRectangle(x, y);
         temprect.setOnMouseClicked(e -> {
             addtoSelected(i,j);
+            for(Tile tile : selected){
+                if(tile == grid.tiles[i][j])
+                    temprect.setFill(Color.RED);
+            }
+            
 
-            // other things you need to do when the mouse hovers....
+
         });
-        // other label configuration...
         return temprect ;
     }
     private Pane initScreen(){
@@ -116,33 +121,45 @@ public class Main extends Application{
     }
     /** After selecting a tile by clicking, it adds it to a selected list*/
     private void addtoSelected(int i, int j) {
+        boolean masodikvolt = false;
         if (selected.size() == 0) {
             selected.add(grid.tiles[i][j]);
             colcoords.add(i);
             rowcoords.add(j);
             logger.debug("Selected");
+            System.out.println("Első ifben rakta be");
         }
         if (isNeighbour(colcoords.get(colcoords.size() - 1), rowcoords.get(rowcoords.size() - 1), i, j)){
-        if (selected.size() == 1) {
-            if (selected.get(0).getValue() == grid.tiles[i][j].getValue()) {
-                selected.add(grid.tiles[i][j]);
-                colcoords.add(i);
-                rowcoords.add(j);
-                logger.debug("Selected");
-            } else
-                logger.debug("Wrong!");
+            if (selected.size() == 1) {
+                if (selected.get(0).getValue() == grid.tiles[i][j].getValue()) {
+                    selected.add(grid.tiles[i][j]);
+                    colcoords.add(i);
+                    rowcoords.add(j);
+                    logger.debug("Selected");
+                    System.out.println("Második if");
+                    masodikvolt = true;
+                } else
+                    logger.debug("Wrong!");
+            }
+            if (selected.size() >= 2) {
+                if ((selected.get(selected.size() - 1).getValue() == grid.tiles[i][j].getValue()) ||
+                        (selected.get(selected.size() - 1).getValue()) == grid.tiles[i][j].getValue() / 2) {
+                    selected.add(grid.tiles[i][j]);
+                    colcoords.add(i);
+                    rowcoords.add(j);
+                    logger.debug("Selected");
+                    System.out.println("Harmadik if");
+                } 
+
+                else
+                    logger.debug("Wrong!");
+            }
         }
-        if (selected.size() >= 2) {
-            if ((selected.get(selected.size() - 1).getValue() == grid.tiles[i][j].getValue()) ||
-                    (selected.get(selected.size() - 1).getValue()) == grid.tiles[i][j].getValue() / 2) {
-                selected.add(grid.tiles[i][j]);
-                colcoords.add(i);
-                rowcoords.add(j);
-                logger.debug("Selected");
-            } else
-                logger.debug("Wrong!");
+        if(masodikvolt){
+            selected.remove(selected.size()-1);
+            rowcoords.remove(rowcoords.size()-1);
+            colcoords.remove(colcoords.size()-1);
         }
-    }
     }
     /**Updates the tiles.*/
     private void updateTiles(){
@@ -244,6 +261,7 @@ public class Main extends Application{
         int result = 0;
         if(selected.size() >=2) {
             for (int i = 0; i < selected.size(); i++) {
+                System.out.println("+ " + selected.get(i));
                 result += selected.get(i).getValue();
                 score += selected.get(i).getValue();
             }
@@ -255,7 +273,8 @@ public class Main extends Application{
             }
             int setcol = rowcoords.get(rowcoords.size() - 1);
             int setrow = colcoords.get(colcoords.size() - 1);
-            grid.tiles[setrow][setcol].setValue(result * 2);
+            System.out.println(result);
+            grid.tiles[setrow][setcol].setValue(result*2);
             texts[setrow][setcol].setText(String.valueOf(grid.tiles[setrow][setcol]));
 
             selected.removeAll(selected);
