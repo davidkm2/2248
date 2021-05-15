@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
  * The MyRectangle class defines a {@link Rectangle} with the
  * specified size, location, color and rounded corners.
  *
- * @author Aniko Apro
+ *
  */
 
 public class MyRectangle extends Rectangle{
